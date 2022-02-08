@@ -1,6 +1,12 @@
 from django.apps import AppConfig
 
-
 class UsersConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'users'
+    name = 'collection.users'
+    label = 'users'
+
+    def ready(self):
+        """Override this to put in:
+            Lives system checks
+            Lives signal registration
+        """
+        pass

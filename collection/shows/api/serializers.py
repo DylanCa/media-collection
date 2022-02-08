@@ -4,6 +4,10 @@ from collection.shows.models import Episode, Season, Show
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
+    included_serializers = {
+        'season': 'collection.shows.api.serializers.SeasonSerializer',
+    }
+
     class Meta:
         model = Episode
         fields = (
@@ -11,8 +15,9 @@ class EpisodeSerializer(serializers.ModelSerializer):
             "name",
             "description",
             "duration",
+            "season",
         )
-        # read_only_fields = ("season",)
+        read_only_fields = ("season",)
 
     def validate(self, attrs):
         if not self.instance:
@@ -21,15 +26,20 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
 
 class SeasonSerializer(serializers.ModelSerializer):
-    episodes = EpisodeSerializer(many=True)
+    included_serializers = {
+        'show': 'collection.shows.api.serializers.ShowSerializer',
+    }
+
+    episodes = EpisodeSerializer(many=True, read_only=True)
 
     class Meta:
         model = Season
         fields = (
             "season_number",
             "episodes",
+            "show"
         )
-        read_only_fields = ("episodes",)
+        read_only_fields = ("show",)
 
     def validate(self, attrs):
         if not self.instance:
@@ -38,7 +48,7 @@ class SeasonSerializer(serializers.ModelSerializer):
 
 
 class ShowSerializer(serializers.ModelSerializer):
-    seasons = SeasonSerializer(many=True)
+    seasons = SeasonSerializer(many=True, read_only=True)
 
     class Meta:
         model = Show
@@ -46,4 +56,3 @@ class ShowSerializer(serializers.ModelSerializer):
             "name",
             "seasons",
         )
-        read_only_fields = ("seasons",)

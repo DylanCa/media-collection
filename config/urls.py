@@ -15,24 +15,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_nested import routers
 
-
-from collection.shows.api.viewsets import SeasonViewSet, ShowViewSet, EpisodeViewSet
+from collection.shows.api.viewsets import EpisodeNestedViewSet, SeasonNestedViewSet, SeasonViewSet, ShowViewSet, EpisodeViewSet
+from collection.users.api.viewsets import MeViewSet, WatchList, UserViewSet
 
 
 router = routers.DefaultRouter()
 router.register(r"shows", ShowViewSet)
+router.register(r"seasons", SeasonViewSet)
+router.register(r"episodes", EpisodeViewSet)
+router.register(r"me", MeViewSet)
+router.register(r"users", UserViewSet)
 
 shows_router = routers.NestedDefaultRouter(router, r"shows", lookup="show")
-shows_router.register(r"seasons", SeasonViewSet)
+shows_router.register(r"seasons", SeasonNestedViewSet)
 
 seasons_router = routers.NestedDefaultRouter(shows_router, r"seasons", lookup="season")
-seasons_router.register(r"episodes", EpisodeViewSet)
+seasons_router.register(r"episodes", EpisodeNestedViewSet)
 
+user_router = routers.NestedDefaultRouter(router, r"users", lookup="user")
+user_router.register(r"watchlist", WatchList)
 
 
 schema_view = get_schema_view(
@@ -55,6 +62,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("", include(shows_router.urls)),
     path("", include(seasons_router.urls)),
+    path("", include(user_router.urls)),
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
 ]

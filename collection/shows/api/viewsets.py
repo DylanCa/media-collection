@@ -1,19 +1,25 @@
-from rest_framework import viewsets, status, response
+from rest_framework import viewsets, status, response, mixins
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
-from collection.shows.api.serializers import EpisodeSerializer, SeasonSerializer, ShowSerializer
+from collection.shows.api.serializers import (
+    EpisodeSerializer,
+    SeasonSerializer,
+    ShowSerializer,
+)
 from ..models import Show, Season, Episode
+
 
 class ShowViewSet(viewsets.ModelViewSet):
     serializer_class = ShowSerializer
     queryset = Show.objects.all()
-    resource_name = 'shows'
+    resource_name = "shows"
     permission_classes = ()
 
-class SeasonViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+
+class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = SeasonSerializer
     queryset = Season.objects.all()
-    resource_name = 'seasons'
+    resource_name = "seasons"
     permission_classes = ()
     lookup_kwargs = {"pk": "id"}
     parent_lookup_kwargs = {"show_pk": "show_id"}
@@ -55,10 +61,10 @@ class SeasonViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             )
 
 
-class EpisodeViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = EpisodeSerializer
     queryset = Episode.objects.all()
-    resource_name = 'episodes'
+    resource_name = "episodes"
     permission_classes = ()
     lookup_kwargs = {"pk": "id"}
     parent_lookup_kwargs = {"season_pk": "season_id"}
@@ -98,3 +104,29 @@ class EpisodeViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 {"not_found": "Episode not found in this Season."},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class EpisodeViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+):
+    serializer_class = EpisodeSerializer
+    queryset = Episode.objects.all()
+    resource_name = "episodes"
+    permission_classes = ()
+
+
+class SeasonViewSet(
+    viewsets.GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+):
+    serializer_class = SeasonSerializer
+    queryset = Season.objects.all()
+    resource_name = "seasons"
+    permission_classes = ()

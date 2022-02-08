@@ -1,3 +1,14 @@
+from rest_framework import viewsets, status, response
+from rest_framework_nested.viewsets import NestedViewSetMixin
+
+from collection.shows.api.serializers import EpisodeSerializer, SeasonSerializer, ShowSerializer
+from ..models import Show, Season, Episode
+
+class ShowViewSet(viewsets.ModelViewSet):
+    serializer_class = ShowSerializer
+    queryset = Show.objects.all()
+    resource_name = 'shows'
+    permission_classes = ()
 
 class SeasonViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = SeasonSerializer

@@ -22,7 +22,7 @@ from drf_yasg import openapi
 from rest_framework_nested import routers
 
 from collection.shows.api.viewsets import EpisodeNestedViewSet, SeasonNestedViewSet, SeasonViewSet, ShowViewSet, EpisodeViewSet
-from collection.users.api.viewsets import MeViewSet, WatchList, UserViewSet
+from collection.users.api.viewsets import MeViewSet, WatchListViewSet, UserViewSet
 
 
 router = routers.DefaultRouter()
@@ -39,7 +39,7 @@ seasons_router = routers.NestedDefaultRouter(shows_router, r"seasons", lookup="s
 seasons_router.register(r"episodes", EpisodeNestedViewSet)
 
 user_router = routers.NestedDefaultRouter(router, r"users", lookup="user")
-user_router.register(r"watchlist", WatchList)
+user_router.register(r"watchlist", WatchListViewSet)
 
 
 schema_view = get_schema_view(

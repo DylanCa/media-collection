@@ -1,3 +1,7 @@
+from rest_framework_json_api import serializers
+
+from collection.shows.models import Episode, Season, Show
+
 
 class EpisodeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,3 +36,14 @@ class SeasonSerializer(serializers.ModelSerializer):
             attrs["show_id"] = self.context.get("view").kwargs["show_pk"]
         return attrs
 
+
+class ShowSerializer(serializers.ModelSerializer):
+    seasons = SeasonSerializer(many=True)
+
+    class Meta:
+        model = Show
+        fields = (
+            "name",
+            "seasons",
+        )
+        read_only_fields = ("seasons",)

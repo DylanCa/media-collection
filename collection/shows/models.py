@@ -10,6 +10,7 @@ class Season(models.Model):
     season_number = models.IntegerField(null=False, blank=False)
     name = models.CharField(max_length=128, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    cover = models.URLField(null=True, blank=True)
 
 
 class Episode(models.Model):
@@ -17,3 +18,4 @@ class Episode(models.Model):
     episode_number = models.IntegerField(null=False, blank=False)
     name = models.CharField(max_length=128, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
+    cover = models.URLField(null=True, blank=True)

@@ -26,6 +26,7 @@ class ShowViewSet(viewsets.ModelViewSet):
             new_season.season_number = season["season_number"]
             new_season.name = season["name"]
             new_season.description = season["overview"]
+            new_season.cover = season["poster_path"]
             new_season.save()
 
         queryset = Show.objects.get(name=show.name)

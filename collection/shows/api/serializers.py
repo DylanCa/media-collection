@@ -14,6 +14,7 @@ class EpisodeSerializer(serializers.ModelSerializer):
             "episode_number",
             "name",
             "description",
+            "cover",
             "season",
         )
         read_only_fields = ("season",)
@@ -37,8 +38,9 @@ class SeasonSerializer(serializers.ModelSerializer):
             "season_number",
             "name",
             "description",
+            "cover",
+            "show",
             "episodes",
-            "show"
         )
         read_only_fields = ("show",)
 

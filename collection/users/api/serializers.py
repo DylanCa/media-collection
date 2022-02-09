@@ -46,10 +46,10 @@ class MediaStatusPerUserSerializer(serializers.ModelSerializer):
         if (not self.instance) and ("user_id" not in attrs):
             if self.context.get("view"):
                 attrs["user_id"] = self.context.get("view").kwargs.get("user_pk")
-
-        resource = attrs["resource_type"].model_class()
-        resource_id = attrs["resource_id"]
-        if not resource.objects.get(id=resource_id):
-            raise resource.DoesNotExist
+        if "resource_type" in attrs:
+            resource = attrs["resource_type"].model_class()
+            resource_id = attrs["resource_id"]
+            if not resource.objects.get(id=resource_id):
+                raise resource.DoesNotExist
 
         return attrs

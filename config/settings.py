@@ -37,6 +37,8 @@ MODULES = [
     "collection.shows.apps.ShowsConfig",
     "collection.users.apps.UsersConfig",
     "collection.movies.apps.MoviesConfig",
+    "collection.utils.apps.UtilsConfig",
+    "collection.games.apps.GamesConfig",
 ]
 
 
@@ -50,6 +52,7 @@ INSTALLED_APPS = MODULES + [
     "rest_framework",
     "rest_framework_json_api",
     "drf_yasg",
+    "generic_relations",
 ]
 
 MIDDLEWARE = [

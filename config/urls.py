@@ -20,10 +20,11 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework_nested import routers
+from collection.games.api.viewsets import GameViewSet, GenreViewSet, PlatformViewSet
 from collection.movies.api.viewsets import CollectionViewSet, MovieViewSet
 
 from collection.shows.api.viewsets import EpisodeNestedViewSet, SeasonNestedViewSet, SeasonViewSet, ShowViewSet, EpisodeViewSet
-from collection.users.api.viewsets import MeViewSet, WatchListViewSet, UserViewSet
+from collection.users.api.viewsets import MeViewSet, MediaStatusViewSet, UserViewSet
 
 
 router = routers.DefaultRouter()
@@ -34,6 +35,9 @@ router.register(r"me", MeViewSet)
 router.register(r"users", UserViewSet)
 router.register(r"movies", MovieViewSet)
 router.register(r"collections", CollectionViewSet)
+router.register(r"games", GameViewSet)
+router.register(r"platforms", PlatformViewSet)
+router.register(r"genres", GenreViewSet)
 
 shows_router = routers.NestedDefaultRouter(router, r"shows", lookup="show")
 shows_router.register(r"seasons", SeasonNestedViewSet)
@@ -42,7 +46,7 @@ seasons_router = routers.NestedDefaultRouter(shows_router, r"seasons", lookup="s
 seasons_router.register(r"episodes", EpisodeNestedViewSet)
 
 user_router = routers.NestedDefaultRouter(router, r"users", lookup="user")
-user_router.register(r"watchlist", WatchListViewSet)
+user_router.register(r"mediastatus", MediaStatusViewSet)
 
 
 schema_view = get_schema_view(

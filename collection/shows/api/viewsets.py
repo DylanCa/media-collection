@@ -1,18 +1,20 @@
 from django.db.utils import IntegrityError
 from rest_framework import viewsets, status, response, mixins
 from rest_framework_nested.viewsets import NestedViewSetMixin
+from django_filters.rest_framework import DjangoFilterBackend
 
 from collection.shows.api.serializers import (
     EpisodeSerializer,
     SeasonSerializer,
     ShowSerializer,
 )
+from collection.utils.filters import FilterViewSetMixin
 from ..models import Show, Season, Episode
 
 
-class ShowViewSet(viewsets.ModelViewSet):
+class ShowViewSet(FilterViewSetMixin, viewsets.ModelViewSet):
     serializer_class = ShowSerializer
-    queryset = Show.objects.all()
+    queryset = Show.objects.all().order_by('id')
     resource_name = "shows"
     permission_classes = ()
 
@@ -34,9 +36,9 @@ class ShowViewSet(viewsets.ModelViewSet):
         serializer = ShowSerializer(queryset)
         return response.Response(serializer.data)
 
-class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class SeasonNestedViewSet(FilterViewSetMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = SeasonSerializer
-    queryset = Season.objects.all()
+    queryset = Season.objects.all().order_by('id')
     resource_name = "seasons"
     permission_classes = ()
     lookup_kwargs = {"pk": "id"}
@@ -57,7 +59,7 @@ class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 {"not_found": "Show not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        queryset = self.queryset.filter(show_id=show.id)
+        queryset = self.filter_queryset(self.queryset).filter(show_id=show.id)
         serializer = self.get_serializer(queryset, many=True)
         return response.Response(serializer.data)
 
@@ -100,9 +102,9 @@ class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 
-class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class EpisodeNestedViewSet(FilterViewSetMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = EpisodeSerializer
-    queryset = Episode.objects.all()
+    queryset = Episode.objects.all().order_by('id')
     resource_name = "episodes"
     permission_classes = ()
     lookup_kwargs = {"pk": "id"}
@@ -125,7 +127,7 @@ class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
                 {"not_found": "Season not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        queryset = self.queryset.filter(season_id=season.id)
+        queryset = self.filter_queryset(self.queryset).filter(season_id=season.id)
         serializer = self.get_serializer(queryset, many=True)
         return response.Response(serializer.data)
 
@@ -160,7 +162,7 @@ class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
 
 
-class EpisodeViewSet(
+class EpisodeViewSet(FilterViewSetMixin, 
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -168,12 +170,12 @@ class EpisodeViewSet(
     mixins.DestroyModelMixin,
 ):
     serializer_class = EpisodeSerializer
-    queryset = Episode.objects.all()
+    queryset = Episode.objects.all().order_by('id')
     resource_name = "episodes"
     permission_classes = ()
 
 
-class SeasonViewSet(
+class SeasonViewSet(FilterViewSetMixin, 
     viewsets.GenericViewSet,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -181,6 +183,6 @@ class SeasonViewSet(
     mixins.DestroyModelMixin,
 ):
     serializer_class = SeasonSerializer
-    queryset = Season.objects.all()
+    queryset = Season.objects.all().order_by('id')
     resource_name = "seasons"
     permission_classes = ()

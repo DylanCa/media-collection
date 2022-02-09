@@ -10,12 +10,13 @@ class User(AbstractUser):
 
 class MediaStatusPerUser(TimeStampedModel):
 
-    STATUS = (("watched", "watched"), ("read", "read"), ("ongoing", "ongoing"))
+    STATUS = (("watched", "watched"), ("read", "read"), ("ongoing", "ongoing"), ("played", "played"))
     resource_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     resource = GenericForeignKey('resource_type', 'resource_id')
     resource_id = models.PositiveIntegerField()
     status = models.CharField(default="ongoing", choices=STATUS, max_length=10)
     user = models.ForeignKey(to=User, related_name="user_episodes", on_delete=models.CASCADE)
+    has_liked = models.BooleanField(null=True)
 
     class Meta:
         unique_together = [['user', 'resource_id', 'resource_type']]

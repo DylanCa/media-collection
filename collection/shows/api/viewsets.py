@@ -1,3 +1,4 @@
+from django.db.utils import IntegrityError
 from rest_framework import viewsets, status, response, mixins
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
@@ -45,7 +46,8 @@ class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         return Show.objects.get(id=self.kwargs["show_pk"])
 
     def get_object(self):
-        return Season.objects.get(id=self.kwargs["pk"])
+        show = self.get_parent_object()
+        return Season.objects.get(season_number=self.kwargs["pk"], show=show)
 
     def list(self, request, *args, **kwargs):
         try:
@@ -71,6 +73,32 @@ class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             )
         return response.Response(serializer.data)
 
+    def create(self, request, *args, **kwargs):
+        show = self.get_parent_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        try:
+            season = serializer.create(serializer.validated_data)
+        except IntegrityError:
+            season = Season.objects.get(season_number=serializer.validated_data['season_number'], show=show)
+
+        for episode in request.data["episodes"]:
+            try:
+                new_episode = Episode()
+                new_episode.season = season
+                new_episode.episode_number = episode["episode_number"]
+                new_episode.name = episode["name"]
+                new_episode.description = episode["overview"]
+                new_episode.cover = episode["still_path"]
+                new_episode.save()
+            except IntegrityError:
+                pass
+
+        queryset = Season.objects.get(season_number=season.season_number, show=show)
+        serializer = SeasonSerializer(queryset)
+        return response.Response(serializer.data)
+
+
 
 class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = EpisodeSerializer
@@ -86,7 +114,8 @@ class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
         )
 
     def get_object(self):
-        return Episode.objects.get(id=self.kwargs["pk"])
+        season = self.get_parent_object()
+        return Episode.objects.get(episode_number=self.kwargs["pk"], season=season)
 
     def list(self, request, *args, **kwargs):
         try:
@@ -115,6 +144,20 @@ class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
             )
 
         return response.Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        season = self.get_parent_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            episode = serializer.create(serializer.validated_data)
+        except IntegrityError:
+            episode = Episode.objects.get(episode_number=serializer.validated_data['episode_number'], season=season)
+
+        queryset = Episode.objects.get(episode_number=episode.episode_number, season=season)
+        serializer = EpisodeSerializer(queryset)
+        return response.Response(serializer.data)
+
 
 
 class EpisodeViewSet(

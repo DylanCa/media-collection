@@ -45,20 +45,16 @@ class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         try:
             show = self.get_parent_object()
-            season = self.get_object()
+            queryset = self.queryset.get(
+                season_number=self.kwargs["pk"], show=show
+            )
+            serializer = self.get_serializer(queryset)
         except (Season.DoesNotExist, Episode.DoesNotExist):
             return response.Response(
                 {"not_found": "Show or Season not found."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-
-        if season.show == show:
-            return super().retrieve(request, *args, **kwargs)
-        else:
-            return response.Response(
-                {"not_found": "Season not found in this Show."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        return response.Response(serializer.data)
 
 
 class EpisodeNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):

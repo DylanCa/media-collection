@@ -15,6 +15,8 @@ class Show(models.Model):
 class Season(models.Model):
     show = models.ForeignKey(to=Show, related_name="seasons" ,on_delete=models.CASCADE)
     season_number = models.IntegerField(null=False, blank=False)
+    name = models.CharField(max_length=128, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
 
 
 class Episode(models.Model):
@@ -22,4 +24,3 @@ class Episode(models.Model):
     episode_number = models.IntegerField(null=False, blank=False)
     name = models.CharField(max_length=128, null=False, blank=False)
     description = models.TextField(null=True, blank=True)
-    duration = models.IntegerField(null=True, blank=True)

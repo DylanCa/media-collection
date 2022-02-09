@@ -1,5 +1,5 @@
 import json
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, mixins
 from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -12,6 +12,7 @@ from collection.users.api.serializers import (
     MediaStatusPerUserSerializer,
 )
 from collection.users.permissions import IsOwner
+from collection.utils.filters import FilterViewSetMixin
 from ..models import MediaStatusPerUser, User
 
 
@@ -37,14 +38,14 @@ class MeViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
 
-class UserViewSet(viewsets.GenericViewSet):
+class UserViewSet(FilterViewSetMixin, viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (IsAuthenticated,)
     resource_name = "users"
 
 
-class WatchListViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
+class WatchListViewSet(FilterViewSetMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = MediaStatusPerUserSerializer
     queryset = MediaStatusPerUser.objects.all()
     resource_name = "watchlist"
@@ -66,12 +67,11 @@ class WatchListViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         user = self.get_parent_object()
-        queryset = self.queryset.filter(user_id=user.id)
+        queryset = self.filter_queryset(self.queryset).filter(user_id=user.id)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        user = self.get_parent_object()
         mediastatus = self.get_object()
         serializer = self.get_serializer(mediastatus)
         return Response(serializer.data)

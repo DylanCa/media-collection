@@ -3,6 +3,7 @@ from rest_framework_json_api import serializers
 from generic_relations.relations import GenericRelatedField
 
 from collection.movies.api.serializers import CollectionSerializer, MovieSerializer
+from collection.games.api.serializers import GameSerializer
 from collection.shows.api.serializers import (
     EpisodeSerializer,
     SeasonSerializer,
@@ -21,6 +22,7 @@ from collection.movies.models import (
 )
 
 from collection.users.models import User, MediaStatusPerUser
+from collection.games.models import Game
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -43,6 +45,7 @@ class MediaStatusPerUserSerializer(serializers.ModelSerializer):
             Show: ShowSerializer(),
             Movie: MovieSerializer(),
             Collection: CollectionSerializer(),
+            Game: GameSerializer(),
         },
         read_only=True,
     )

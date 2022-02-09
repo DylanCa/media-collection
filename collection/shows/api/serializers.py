@@ -5,7 +5,7 @@ from collection.shows.models import Episode, Season, Show
 
 class EpisodeSerializer(serializers.ModelSerializer):
     included_serializers = {
-        'season': 'collection.shows.api.serializers.SeasonSerializer',
+        "season": "collection.shows.api.serializers.SeasonSerializer",
     }
 
     class Meta:
@@ -14,20 +14,34 @@ class EpisodeSerializer(serializers.ModelSerializer):
             "episode_number",
             "name",
             "description",
-            "cover",
+            "cover_image",
             "season",
         )
         read_only_fields = ("season",)
 
     def validate(self, attrs):
         if not self.instance:
-            attrs["season_id"] = self.context.get("view").kwargs["season_pk"]
+            season = Season.objects.get(
+            season_number=self.context.get("view").kwargs["season_pk"], show=self.context.get("view").kwargs["show_pk"]
+        )
+            attrs["season_id"] = season.id
+        if "overview" in self.initial_data.keys():
+            attrs["description"] = self.initial_data["overview"]
+        
+        if "still_path" in self.initial_data.keys():
+            attrs[
+                "cover_image"
+            ] = f"https://image.tmdb.org/t/p/w500{self.initial_data['still_path']}"
+        elif "cover" in self.initial_data.keys():
+            attrs[
+                "cover_image"
+            ] = f"https://image.tmdb.org/t/p/w500{self.initial_data['cover']}"
         return attrs
 
 
 class SeasonSerializer(serializers.ModelSerializer):
     included_serializers = {
-        'show': 'collection.shows.api.serializers.ShowSerializer',
+        "show": "collection.shows.api.serializers.ShowSerializer",
     }
 
     episodes = EpisodeSerializer(many=True, read_only=True)
@@ -38,7 +52,7 @@ class SeasonSerializer(serializers.ModelSerializer):
             "season_number",
             "name",
             "description",
-            "cover",
+            "cover_image",
             "show",
             "episodes",
         )
@@ -47,6 +61,14 @@ class SeasonSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         if not self.instance:
             attrs["show_id"] = self.context.get("view").kwargs["show_pk"]
+
+        if "overview" in self.initial_data.keys():
+            attrs["description"] = self.initial_data["overview"]
+        
+        if "poster_path" in self.initial_data.keys():
+            attrs[
+                "cover_image"
+            ] = f"https://image.tmdb.org/t/p/w500{self.initial_data['poster_path']}"
         return attrs
 
 
@@ -58,11 +80,16 @@ class ShowSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "description",
-            "cover",
+            "cover_image",
             "seasons",
         )
 
     def validate(self, attrs):
-        attrs["description"] = self.initial_data['overview']
-        attrs["cover"] = f"https://image.tmdb.org/t/p/w500{self.initial_data['poster_path']}"
+        if "overview" in self.initial_data.keys():
+            attrs["description"] = self.initial_data["overview"]
+        
+        if "poster_path" in self.initial_data.keys():
+            attrs[
+                "cover_image"
+            ] = f"https://image.tmdb.org/t/p/w500{self.initial_data['poster_path']}"
         return attrs

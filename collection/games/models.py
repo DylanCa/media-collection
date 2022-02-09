@@ -7,7 +7,7 @@ class Genre(models.Model):
     name = models.CharField(max_length=128, null=False, blank=False, unique=True)
 
 class Game(models.Model):
-    name = models.CharField(max_length=128, null=False, blank=False, unique=True)
+    title = models.CharField(max_length=128, null=False, blank=False, unique=True)
     description = models.TextField(null=True, blank=True)
     platforms = models.ManyToManyField(to=Platform, related_name="games", blank=True)
     genres = models.ManyToManyField(to=Genre, related_name="games", blank=True)

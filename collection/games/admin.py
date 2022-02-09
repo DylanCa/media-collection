@@ -5,7 +5,7 @@ from .models import Game, Genre, Platform
 class GameAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "name",
+        "title",
         "description",
         "cover_image",
     )

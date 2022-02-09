@@ -31,12 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
-            "is_staff",
-            "is_superuser",
-        )
-        read_only_fields = (
-            "is_staff",
-            "is_superuser",
         )
 
 

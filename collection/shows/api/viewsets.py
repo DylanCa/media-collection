@@ -15,6 +15,22 @@ class ShowViewSet(viewsets.ModelViewSet):
     resource_name = "shows"
     permission_classes = ()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        show = serializer.create(serializer.validated_data)
+
+        for season in request.data["seasons"]:
+            new_season = Season()
+            new_season.show = show
+            new_season.season_number = season["season_number"]
+            new_season.name = season["name"]
+            new_season.description = season["overview"]
+            new_season.save()
+
+        queryset = Show.objects.get(name=show.name)
+        serializer = ShowSerializer(queryset)
+        return response.Response(serializer.data)
 
 class SeasonNestedViewSet(NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = SeasonSerializer

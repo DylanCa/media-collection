@@ -55,5 +55,10 @@ class ShowSerializer(serializers.ModelSerializer):
         model = Show
         fields = (
             "name",
+            "description",
             "seasons",
         )
+
+    def validate(self, attrs):
+        attrs["description"] = self.initial_data['overview']
+        return attrs

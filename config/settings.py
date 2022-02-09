@@ -37,6 +37,7 @@ MODULES = [
     "collection.shows.apps.ShowsConfig",
     "collection.users.apps.UsersConfig",
     "collection.movies.apps.MoviesConfig",
+    "collection.utils.apps.UtilsConfig",
 ]
 
 

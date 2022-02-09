@@ -1,3 +1,4 @@
+import json
 from rest_framework import viewsets, status
 from rest_framework_nested.viewsets import NestedViewSetMixin
 from rest_framework.permissions import IsAuthenticated
@@ -26,24 +27,13 @@ class MeViewSet(viewsets.GenericViewSet):
 
         return Response(serializer.data)
 
-    @action(methods=["GET", "POST", "PATCH", "PUT", "DELETE"], detail=False)
+    @action(methods=["GET"], detail=False)
     def watchlist(self, request, *args, **kwargs):
+        self.resource_name = "watchlist"
         user = self.request.user
         queryset = MediaStatusPerUser.objects.filter(user=user)
+        serializer = MediaStatusPerUserSerializer(queryset, many=True)
 
-
-        if request.method == "GET":
-            serializer = MediaStatusPerUserSerializer(queryset, many=True)
-            pass
-        elif request.method == "POST":
-            pass
-        elif request.method == "PATCH":
-            pass
-        elif request.method == "PUT":
-            pass
-        elif request.method == "DELETE":
-            pass
-            
         return Response(serializer.data)
 
 

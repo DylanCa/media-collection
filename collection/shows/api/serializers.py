@@ -11,6 +11,7 @@ class EpisodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Episode
         fields = (
+            "id",
             "episode_number",
             "name",
             "description",
@@ -49,6 +50,7 @@ class SeasonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Season
         fields = (
+            "id",
             "season_number",
             "name",
             "description",
@@ -78,6 +80,7 @@ class ShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Show
         fields = (
+            "id",
             "name",
             "description",
             "cover_image",

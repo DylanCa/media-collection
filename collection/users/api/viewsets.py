@@ -29,8 +29,8 @@ class MeViewSet(viewsets.GenericViewSet):
         return Response(serializer.data)
 
     @action(methods=["GET"], detail=False)
-    def watchlist(self, request, *args, **kwargs):
-        self.resource_name = "watchlist"
+    def mediastatus(self, request, *args, **kwargs):
+        self.resource_name = "mediastatus"
         user = self.request.user
         queryset = MediaStatusPerUser.objects.filter(user=user)
         serializer = MediaStatusPerUserSerializer(queryset, many=True)
@@ -45,10 +45,10 @@ class UserViewSet(FilterViewSetMixin, viewsets.GenericViewSet, mixins.ListModelM
     resource_name = "users"
 
 
-class WatchListViewSet(FilterViewSetMixin, NestedViewSetMixin, viewsets.ModelViewSet):
+class MediaStatusViewSet(FilterViewSetMixin, NestedViewSetMixin, viewsets.ModelViewSet):
     serializer_class = MediaStatusPerUserSerializer
     queryset = MediaStatusPerUser.objects.all()
-    resource_name = "watchlist"
+    resource_name = "mediastatus"
     parent_lookup_kwargs = {"user_pk": "user_id"}
 
     def get_parent_object(self):

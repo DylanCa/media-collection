@@ -56,9 +56,11 @@ class ShowSerializer(serializers.ModelSerializer):
         fields = (
             "name",
             "description",
+            "cover",
             "seasons",
         )
 
     def validate(self, attrs):
         attrs["description"] = self.initial_data['overview']
+        attrs["cover"] = f"https://image.tmdb.org/t/p/w500{self.initial_data['poster_path']}"
         return attrs

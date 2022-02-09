@@ -33,7 +33,11 @@ AUTH_USER_MODEL = "users.User"
 
 # Application definition
 
-MODULES = ["collection.shows.apps.ShowsConfig", "collection.users.apps.UsersConfig"]
+MODULES = [
+    "collection.shows.apps.ShowsConfig",
+    "collection.users.apps.UsersConfig",
+    "collection.movies.apps.MoviesConfig",
+]
 
 
 INSTALLED_APPS = MODULES + [
